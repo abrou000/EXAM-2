@@ -1,0 +1,121 @@
+---
+title: "EXAM 2"
+author: "Alain Brou"
+date: "11/23/2020"
+output: html_document
+---
+
+# First Part ( calculator used )
+1)
+a- 0.5398
+b-4.1348E^-7
+c-0.1770
+d-(24.45,3.55)
+e-0.122681
+f-1.418596
+
+
+2)
+there is no significance
+the t-stat = 1.027322654
+the p-value= 0.3056922123
+df = 174.2878548
+
+3) tstat = 7.3385
+   pvalue = 2.175951E^-13
+
+
+
+4)
+
+```{r}
+attach(acs2017_ny)
+usevar<- (AGE>=18) & ( AGE<=55) & (LABFORCE==1)
+datuse<- subset(acs2017_ny,usevar)
+detach()
+attach(datuse)
+```
+
+#the criteria put into play is the AGE. we chose AGE and limited between 18 and 15 to ensure that the population be able pertain to the Labor Market. Although it is 16 but we chose 18 to maake sure that the individual is up to chose for his own.
+also we added Labor force constraint to make sure that those inside are those who are in 
+
+```{r}
+t.test(female)
+```
+
+```{r}
+model1<-lm(UHRSWORK~AGE+I(AGE^2) +female+  AfAm+ I(female*AfAm)+ I(female*educ_college) +NCHILD + educ_nohs+educ_hs+educ_college +educ_advdeg, data = datuse)
+summary(model1)
+
+anova(model1)
+```
+
+a) the variables choosen are exogenous, they all are statiscally significant
+
+
+```{r}
+predicted <-data.frame(AGE=30, female=0,AfAm=0,NCHILD=0,educ_nohs=1,educ_hs=0, educ_college=0,educ_advdeg=0)
+modelpredict<-predict(model1,newdata = predicted)
+summary(modelpredict)
+```
+```{r}
+datafor<-data.frame(datuse$UHRSWORK,
+           datuse$AGE,
+           datuse$female,
+           datuse$AfAm,
+           datuse$educ_nohs,
+           datuse$educ_hs,
+           datuse$educ_college,
+           datuse$educ_advdeg,
+           datuse$NCHILD)
+
+names(datafor)<-c("UHRSWORK",
+                  "female",
+                  "Afam",
+                  "educ_nohs",
+                  "educ_hs)",
+                  "educ_college",
+                  "educ_advdeg",
+                  "NCHILD")
+           
+```
+
+```{r}
+require("standardize")
+set.seed(54321)
+NN <- length(datafor$UHRSWOK)
+restrict_1 <- (runif(NN) < 0.8) # use 10% as training data
+summary(restrict_1)
+dat_train <- subset(datafor, restrict_1)
+dat_test <- subset(datafor, !restrict_1)
+sobj <- standardize(UHRSWORK~AGE+I(AGE^2) +female+  AfAm+ I(female*AfAm)+ I(female*educ_college) +NCHILD + educ_nohs+educ_hs+educ_college +educ_advdeg, data = datuse)
+
+s_dat_test <- predict(sobj, dat_test)
+```
+
+# i do not know if i miss something but i try to predict but nothing
+
+
+
+```{r}
+UHRSW<-UHRSWORK>=35
+
+modellogit1<- glm(UHRSW~ AGE + I(AGE^2) + female + educ_nohs+ educ_hs + NCHILD + AfAm ,family = binomial, data= datuse)
+summary(modellogit1)
+
+anova(modellogit1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
